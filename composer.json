@@ -1,0 +1,25 @@
+{
+  "name": "p4bgroup/fix-utf8",
+  "description": "Fix garbled/multiple utf8 encodings applied to a string",
+  "license": "FreeBSD License",
+  "keywords": [
+    "utf8",
+    "garbled"
+  ],
+  "homepage": "https://github.com/P4BGroup/fix-utf8",
+  "authors": [
+    {
+      "name": "P4B",
+      "email": "andrei.isoc@p4b.ro",
+      "homepage": "http://www.p4b.ro/"
+    }
+  ],
+  "require": {
+    "php": ">=5.3.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "FixUTF8\\": "src/"
+    }
+  }
+}
