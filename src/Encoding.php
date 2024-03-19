@@ -4,7 +4,7 @@ namespace FixUTF8;
 
 class Encoding
 {
-    protected static $win1252ToUtf8 = array(
+    protected static array $win1252ToUtf8 = array(
         128 => "\xe2\x82\xac", // Euro Sign
         // UNASSIGNED
         130 => "\xe2\x80\x9a", // Single Low-9 Quotation Mark
@@ -20,7 +20,6 @@ class Encoding
         140 => "\xc5\x92",     // Latin Capital Ligature OE
         // UNASSIGNED
         142 => "\xc5\xbd",     // Latin Capital Letter Z With Caron
-        // UNASSIGNED
         // UNASSIGNED
         145 => "\xe2\x80\x98", // Left Single Quotation Mark
         146 => "\xe2\x80\x99", // Right Single Quotation Mark
@@ -39,7 +38,7 @@ class Encoding
         159 => "\xc5\xb8"      // Latin Capital Letter Y With Diaeresis
     );
 
-    protected static $brokenUtf8ToUtf8 = array(
+    protected static array $brokenUtf8ToUtf8 = array(
         "\xe2\x82\xac" => "\xc2\x80", // Euro Sign
         // UNASSIGNED
         "\xe2\x80\x9a" => "\xc2\x82", // Single Low-9 Quotation Mark
@@ -55,7 +54,6 @@ class Encoding
         "\xc5\x92"     => "\xc2\x8c", // Latin Capital Ligature OE
         // UNASSIGNED
         "\xc5\xbd"     => "\xc2\x8e", // Latin Capital Letter Z With Caron
-        // UNASSIGNED
         // UNASSIGNED
         "\xe2\x80\x98" => "\xc2\x91", // Left Single Quotation Mark
         "\xe2\x80\x99" => "\xc2\x92", // Right Single Quotation Mark
@@ -78,24 +76,17 @@ class Encoding
      * Fix a garbled UTF-8 string that was encoded multiple times
      *
      * @param string $text
-     *
      * @return string
      */
-    public static function fixUtf8($text)
+    public static function fixUtf8(string $text): string
     {
-        if(false === is_string($text)) {
-            return $text;
-        }
-
         $last = "";
-        while($last <> $text){
+        while ($last <> $text) {
             $last = $text;
             $text = self::toUTF8(self::utf8Decode($text));
         }
 
-        $text = self::toUTF8(self::utf8Decode($text));
-
-        return $text;
+        return self::toUTF8(self::utf8Decode($text));
     }
 
     /**
@@ -103,10 +94,9 @@ class Encoding
      * It assumes that the encoding of the original string is either Windows-1252 or ISO 8859-1.
      *
      * @param string $text
-     *
      * @return string
      */
-    protected static function toUTF8($text)
+    protected static function toUTF8(string $text): string
     {
         $max = self::length($text);
 
@@ -115,10 +105,10 @@ class Encoding
             $c1 = $text[$i];
 
             // Should be converted to UTF-8, if it's not UTF-8 already
-            if ($c1>="\xc0") {
-                $c2 = $i+1 >= $max ? "\x00" : $text[$i+1];
-                $c3 = $i+2 >= $max ? "\x00" : $text[$i+2];
-                $c4 = $i+3 >= $max ? "\x00" : $text[$i+3];
+            if ($c1 >= "\xc0") {
+                $c2 = $i + 1 >= $max ? "\x00" : $text[$i + 1];
+                $c3 = $i + 2 >= $max ? "\x00" : $text[$i + 2];
+                $c4 = $i + 3 >= $max ? "\x00" : $text[$i + 3];
 
                 $isC2UTF8 = ($c2 >= "\x80" && $c2 <= "\xbf");
                 $isC3UTF8 = ($c3 >= "\x80" && $c3 <= "\xbf");
@@ -126,7 +116,6 @@ class Encoding
 
                 // 2 bytes UTF-8
                 if ($c1 >= "\xc0" & $c1 <= "\xdf") {
-
                     if ($isC2UTF8) {
                         $utf .= $c1 . $c2;
                         $i++;
@@ -135,7 +124,6 @@ class Encoding
                     }
                     // 3 bytes UTF-8
                 } elseif ($c1 >= "\xe0" & $c1 <= "\xef") {
-
                     if ($isC2UTF8 && $isC3UTF8) {
                         $utf .= $c1 . $c2 . $c3;
                         $i = $i + 2;
@@ -144,7 +132,6 @@ class Encoding
                     }
                     // 4 bytes UTF-8
                 } elseif ($c1 >= "\xf0" & $c1 <= "\xf7") {
-
                     if ($isC2UTF8 && $isC3UTF8 && $isC4UTF8) {
                         $utf .= $c1 . $c2 . $c3 . $c4;
                         $i = $i + 3;
@@ -155,13 +142,8 @@ class Encoding
                     $utf .= self::convertNonUtf8($c1);
                 }
             } elseif (($c1 & "\xc0") == "\x80") {
-
                 // Windows-1252 case
-                if (isset(self::$win1252ToUtf8[ord($c1)])) {
-                    $utf .= self::$win1252ToUtf8[ord($c1)];
-                } else {
-                    $utf .= self::convertNonUtf8($c1);
-                }
+                $utf .= self::$win1252ToUtf8[\ord($c1)] ?? self::convertNonUtf8($c1);
             } else {
                 $utf .= $c1;
             }
@@ -171,47 +153,45 @@ class Encoding
     }
 
     /**
-     * Get the number of characters of a multi byte string
-     * using 8 bit encoding
+     * Get the number of characters of a multibyte string
+     * using 8-bit encoding
      *
      * @param string $text
-     *
      * @return int
      */
-    public static function length($text)
+    public static function length(string $text): int
     {
-        return mb_strlen($text, '8bit');
+        return \mb_strlen($text, '8bit');
     }
 
     /**
-     * Decode an UTF-8 string
+     * Decode a UTF-8 string
      *
      * @param string $text
-     *
      * @return string
      */
-    protected static function utf8Decode($text)
+    protected static function utf8Decode(string $text): string
     {
-        $text = str_replace(
-            array_keys(self::$brokenUtf8ToUtf8),
-            array_values(self::$brokenUtf8ToUtf8
+        $text = \str_replace(
+            \array_keys(self::$brokenUtf8ToUtf8),
+            \array_values(
+                self::$brokenUtf8ToUtf8
             ),
             self::toUTF8($text)
         );
 
-        return utf8_decode($text);
+        return \mb_convert_encoding($text, "UTF-8", \mb_detect_encoding($text));
     }
 
     /**
      * Convert non UTF-8 character
      *
      * @param string $char
-     *
      * @return string
      */
-    protected static function convertNonUtf8($char)
+    protected static function convertNonUtf8(string $char): string
     {
-        $cc1 = (chr(ord($char) / 64) | "\xc0");
+        $cc1 = (\chr(\ord($char) / 64) | "\xc0");
         $cc2 = ($char & "\x3f") | "\x80";
 
         return $cc1 . $cc2;

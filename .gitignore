@@ -1,0 +1,7 @@
+vendor
+.idea
+.git
+composer.lock
+codeception.xml
+fix-utf8.iml
+installed.php

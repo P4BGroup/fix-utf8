@@ -15,7 +15,8 @@
     }
   ],
   "require": {
-    "php": ">=5.3.3"
+    "php": "^8.2",
+    "ext-mbstring": "*"
   },
   "autoload": {
     "psr-4": {

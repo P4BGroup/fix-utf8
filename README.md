@@ -1,5 +1,5 @@
 # FixUTF8
-Fix garbled/multiple utf8 encodings applied to a string - test
+Fix garbled/multiple utf8 encodings applied to a string
 
 Description
 ------------
@@ -16,7 +16,7 @@ $garbledString = utf8_encode($garbledString);
 Requirements
 ------------
 
-* PHP >= 5.3.3
+* PHP ^8.2
     
 Usage
 -----
