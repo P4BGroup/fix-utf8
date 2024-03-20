@@ -4,7 +4,8 @@ namespace FixUTF8;
 
 class Encoding
 {
-    protected static array $win1252ToUtf8 = array(
+    /** @var array|string[] */
+    protected static array $win1252ToUtf8 = [
         128 => "\xe2\x82\xac", // Euro Sign
         // UNASSIGNED
         130 => "\xe2\x80\x9a", // Single Low-9 Quotation Mark
@@ -36,9 +37,10 @@ class Encoding
         // UNASSIGNED
         158 => "\xc5\xbe",     // Latin Small Letter Z With Caron
         159 => "\xc5\xb8"      // Latin Capital Letter Y With Diaeresis
-    );
+    ];
 
-    protected static array $brokenUtf8ToUtf8 = array(
+    /** @var array|string[] */
+    protected static array $brokenUtf8ToUtf8 = [
         "\xe2\x82\xac" => "\xc2\x80", // Euro Sign
         // UNASSIGNED
         "\xe2\x80\x9a" => "\xc2\x82", // Single Low-9 Quotation Mark
@@ -70,7 +72,7 @@ class Encoding
         // UNASSIGNED
         "\xc5\xbe"     => "\xc2\x9e", // Latin Small Letter Z With Caron
         "\xc5\xb8"     => "\xc2\x9f"  // Latin Capital Letter Y With Diaeresis
-    );
+    ];
 
     /**
      * Fix a garbled UTF-8 string that was encoded multiple times
