@@ -16,7 +16,7 @@ $garbledString = utf8_encode($garbledString);
 Requirements
 ------------
 
-* PHP >= 5.3.3
+* PHP ^8.2
     
 Usage
 -----
